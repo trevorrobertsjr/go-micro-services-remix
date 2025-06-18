@@ -1,0 +1,73 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  annotations:
+    kompose.cmd: kompose convert
+    kompose.version: 1.22.0 (955b78124)
+  creationTimestamp: null
+  labels:
+    io.kompose.service: user
+  name: user
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      io.kompose.service: user
+  strategy: {}
+  template:
+    metadata:
+      annotations:
+        kompose.cmd: kompose convert
+        kompose.version: 1.22.0 (955b78124)
+        sidecar.istio.io/statsInclusionPrefixes: cluster.outbound,cluster_manager,listener_manager,http_mixer_filter,tcp_mixer_filter,server,cluster.xds-grp,listener,connection_manager
+        sidecar.istio.io/statsInclusionRegexps: http.*
+      creationTimestamp: null
+      labels:
+        io.kompose.service: user
+    spec:
+      containers:
+        - command:
+            - user
+          image: 961338350655.dkr.ecr.us-east-1.amazonaws.com/aiopslab-hotelreservation-aio:latest
+          # securityContext:
+          #   privileged: true
+          name: hotel-reserv-user
+          ports:
+            - containerPort: 8086
+          env:
+            - name: DD_API_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: dd-api-key
+                  key: api-key
+            # - name: DD_SITE
+            #   valueFrom:
+            #     configMapKeyRef:
+            #       name: dd-site
+            #       key: site
+            - name: DD_SERVICE
+              value: "user"
+            - name: DD_ENV
+              value: "aiopslab"
+            - name: DD_VERSION
+              value: "1.0"
+            - name: DD_TRACE_AGENT_URL
+              value: "unix:///var/run/datadog/apm.socket"
+            - name: DD_TRACE_SAMPLING_RULES
+              value: '[{"sample_rate":1.0}]' # Captures all traces
+            - name: DD_TRACE_RATE_LIMIT
+              value: "100" # Allows up to 100 traces per second
+          volumeMounts:
+            - mountPath: /var/run/datadog
+              name: "apmsocketpath"
+          resources:
+            requests:
+              cpu: 100m
+            limits:
+              cpu: 1000m
+      volumes:
+        - hostPath:
+            path: /var/run/datadog
+          name: "apmsocketpath"
+      restartPolicy: Always
+status: {}

@@ -1,0 +1,52 @@
+# Binaries for programs and plugins
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+*.test
+
+# Output of the go coverage tool
+*.out
+
+# Go build artifacts
+/bin/
+/build/
+/dist/
+
+# Dependency directories (vendor if you're using vendoring)
+/vendor/
+
+# Go workspace file
+go.work
+go.work.sum
+
+# Go modules
+go.sum
+
+# IDE/editor configs
+.vscode/
+.idea/
+*.swp
+
+# OS-generated files
+.DS_Store
+Thumbs.db
+
+# Docker-related
+# Ignore Docker build output
+*.tar
+*.img
+
+# Docker volumes or temp data (if you mount any)
+.docker/
+
+# Docker Compose override files (optional)
+docker-compose.override.yml
+.env
+.env.*
+.envrc
+
+# Logs
+*.log
+logs/
